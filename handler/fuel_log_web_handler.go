@@ -45,7 +45,11 @@ func (h *FuelLogWebHandler) Create(c *gin.Context) {
 	h.usecase.Create(req)
 
 	logs, _ := h.usecase.GetAll()
+
+	// render table, then append an out-of-band swap to clear the modal
+	c.Writer.WriteHeader(http.StatusOK)
 	c.HTML(http.StatusOK, "table", logs)
+	c.Writer.Write([]byte(`<div id="modal-container" hx-swap-oob="true"></div>`))
 }
 
 func (h *FuelLogWebHandler) EditForm(c *gin.Context) {
@@ -81,5 +85,13 @@ func (h *FuelLogWebHandler) Update(c *gin.Context) {
 func (h *FuelLogWebHandler) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	h.usecase.Delete(uint(id))
+	c.String(http.StatusOK, "")
+}
+
+func (h *FuelLogWebHandler) NewForm(c *gin.Context) {
+	c.HTML(http.StatusOK, "create_form", nil)
+}
+
+func (h *FuelLogWebHandler) CloseModal(c *gin.Context) {
 	c.String(http.StatusOK, "")
 }

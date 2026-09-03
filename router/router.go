@@ -14,6 +14,7 @@ func SetupRouter(fuelLogHandler *handler.FuelLogHandler, webHandler *handler.Fue
 		"templates/partials/table.html",
 		"templates/partials/row.html",
 		"templates/partials/edit_row.html",
+		"templates/partials/create_form.html",
 	)
 	r.Static("/static", "./static")
 
@@ -25,6 +26,8 @@ func SetupRouter(fuelLogHandler *handler.FuelLogHandler, webHandler *handler.Fue
 		web.GET("/:id/edit", webHandler.EditForm)
 		web.PUT("/:id", webHandler.Update)
 		web.DELETE("/:id", webHandler.Delete)
+		web.GET("/new", webHandler.NewForm)
+		web.GET("/close-modal", webHandler.CloseModal)
 	}
 
 	api := r.Group("/api/v1")
