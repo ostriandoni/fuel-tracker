@@ -1,0 +1,20 @@
+{{ define "row" }}
+<tr id="row-{{ .ID }}">
+    <td>{{ .Month }}</td>
+    <td>{{ .Date.Format "2006-01-02" }}</td>
+    <td>{{ .PricePerLiter }}</td>
+    <td>{{ .TotalPaid }}</td>
+    <td>{{ .LitersFilled }}</td>
+    <td>{{ .KmStart }}</td>
+    <td>{{ .KmEnd }}</td>
+    <td>{{ .Distance }}</td>
+    <td>{{ .PaidPerKm }}</td>
+    <td>{{ .UsageKmL }}</td>
+    <td>{{ .Location }}</td>
+    <td>{{ .Notes }}</td>
+    <td>
+        <button hx-get="/web/fuel-logs/{{ .ID }}/edit" hx-target="#row-{{ .ID }}" hx-swap="outerHTML">Edit</button>
+        <button hx-delete="/web/fuel-logs/{{ .ID }}" hx-target="#row-{{ .ID }}" hx-swap="outerHTML swap:1s" hx-confirm="Delete this record?">Delete</button>
+    </td>
+</tr>
+{{ end }}

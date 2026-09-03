@@ -1,0 +1,19 @@
+{{ define "edit_row" }}
+<tr id="row-{{ .ID }}">
+    <form hx-put="/web/fuel-logs/{{ .ID }}" hx-target="#row-{{ .ID }}" hx-swap="outerHTML">
+        <td colspan="2"><input type="date" name="date" value="{{ .Date.Format "2006-01-02" }}"></td>
+        <td><input type="number" step="0.01" name="price_per_liter" value="{{ .PricePerLiter }}"></td>
+        <td><input type="number" step="0.01" name="total_paid" value="{{ .TotalPaid }}"></td>
+        <td><input type="number" step="0.01" name="liters_filled" value="{{ .LitersFilled }}"></td>
+        <td><input type="number" name="km_start" value="{{ .KmStart }}"></td>
+        <td><input type="number" name="km_end" value="{{ .KmEnd }}"></td>
+        <td colspan="2">-</td>
+        <td><input type="text" name="location" value="{{ .Location }}"></td>
+        <td><input type="text" name="notes" value="{{ .Notes }}"></td>
+        <td>
+            <button type="submit">Save</button>
+            <button type="button" hx-get="/web/fuel-logs/{{ .ID }}" hx-target="#row-{{ .ID }}" hx-swap="outerHTML">Cancel</button>
+        </td>
+    </form>
+</tr>
+{{ end }}

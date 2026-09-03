@@ -1,0 +1,16 @@
+{{ define "table" }}
+<table border="1">
+    <thead>
+        <tr>
+            <th>Month</th><th>Date</th><th>Price/L</th><th>Paid</th><th>Liters</th>
+            <th>KM Start</th><th>KM End</th><th>Distance</th><th>Paid/KM</th><th>KM/L</th>
+            <th>Location</th><th>Notes</th><th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="fuel-rows">
+        {{ range . }}
+            {{ template "row" . }}
+        {{ end }}
+    </tbody>
+</table>
+{{ end }}

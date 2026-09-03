@@ -27,8 +27,9 @@ func main() {
 	fuelLogRepo := repository.NewFuelLogRepository(db)
 	fuelLogUsecase := usecase.NewFuelLogUsecase(fuelLogRepo)
 	fuelLogHandler := handler.NewFuelLogHandler(fuelLogUsecase)
+	fuelLogWebHandler := handler.NewFuelLogWebHandler(fuelLogUsecase)
 
-	r := router.SetupRouter(fuelLogHandler)
+	r := router.SetupRouter(fuelLogHandler, fuelLogWebHandler)
 
 	port := os.Getenv("APP_PORT")
 	if port == "" {

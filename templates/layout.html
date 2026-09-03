@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fuel Tracker</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Fuel Tracker</h1>
+
+    <form hx-post="/web/fuel-logs" hx-target="#fuel-table" hx-swap="innerHTML" hx-on::after-request="this.reset()">
+        <input type="date" name="date" required>
+        <input type="number" step="0.01" name="price_per_liter" placeholder="Price/Liter" required>
+        <input type="number" step="0.01" name="total_paid" placeholder="Total Paid" required>
+        <input type="number" step="0.01" name="liters_filled" placeholder="Liters" required>
+        <input type="number" name="km_start" placeholder="KM Start" required>
+        <input type="number" name="km_end" placeholder="KM End" required>
+        <input type="text" name="location" placeholder="Location">
+        <input type="text" name="notes" placeholder="Notes">
+        <button type="submit">Add</button>
+    </form>
+
+    <div id="fuel-table">
+        {{ template "table" . }}
+    </div>
+</body>
+</html>
