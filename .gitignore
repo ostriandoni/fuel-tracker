@@ -1,0 +1,47 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Compiled binaries
+fuel-tracker
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+/dist/
+
+# Go build/test artifacts
+*.test
+*.out
+vendor/
+
+# Go workspace file (if using multi-module workspaces)
+go.work
+go.work.sum
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Air (Go live-reload tool, common for dev)
+tmp/
+.air.toml.local
+
+# Database files (if using SQLite locally)
+*.db
+*.sqlite
+*.sqlite3
