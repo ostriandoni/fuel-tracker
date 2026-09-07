@@ -1,0 +1,6 @@
+{{ define "petrol_type_options" }}
+<option value="">-- Select Petrol Type --</option>
+{{ range . }}
+    <option value="{{ .ID }}" data-price="{{ .Price }}">{{ .Name }} (Rp {{ .Price }})</option>
+{{ end }}
+{{ end }}

@@ -27,9 +27,19 @@ func main() {
 	fuelLogRepo := repository.NewFuelLogRepository(db)
 	fuelLogUsecase := usecase.NewFuelLogUsecase(fuelLogRepo)
 	fuelLogHandler := handler.NewFuelLogHandler(fuelLogUsecase)
-	fuelLogWebHandler := handler.NewFuelLogWebHandler(fuelLogUsecase)
 
-	r := router.SetupRouter(fuelLogHandler, fuelLogWebHandler)
+	locationRepo := repository.NewLocationRepository(db)
+	locationUsecase := usecase.NewLocationUsecase(locationRepo)
+	locationHandler := handler.NewLocationHandler(locationUsecase)
+
+	petrolTypeRepo := repository.NewPetrolTypeRepository(db)
+	petrolTypeUsecase := usecase.NewPetrolTypeUsecase(petrolTypeRepo)
+	petrolTypeHandler := handler.NewPetrolTypeHandler(petrolTypeUsecase)
+
+	fuelLogWebHandler := handler.NewFuelLogWebHandler(fuelLogUsecase, locationUsecase)
+	locationWebHandler := handler.NewLocationWebHandler(petrolTypeUsecase)
+
+	r := router.SetupRouter(fuelLogHandler, fuelLogWebHandler, locationWebHandler, locationHandler, petrolTypeHandler)
 
 	port := os.Getenv("APP_PORT")
 	if port == "" {

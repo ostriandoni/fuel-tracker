@@ -3,29 +3,58 @@
     <div class="modal-box">
         <h2>Add Fuel Log</h2>
         <form hx-post="/web/fuel-logs" hx-target="#fuel-table" hx-swap="innerHTML">
-            <label>Date</label>
-            <input type="date" name="date" required>
 
-            <label>Price per Liter</label>
-            <input type="number" step="0.01" name="price_per_liter" required>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" name="date" value="{{ .Today }}" required>
+            </div>
 
-            <label>Total Paid</label>
-            <input type="number" step="0.01" name="total_paid" required>
+            <div class="form-group">
+                <label>Location</label>
+                <select name="location_id" id="location_select" onchange="loadPetrolTypes(this.value)" required>
+                    <option value="">-- Select Location --</option>
+                    {{ range .Locations }}
+                        <option value="{{ .ID }}">{{ .Name }}</option>
+                    {{ end }}
+                </select>
+            </div>
 
-            <label>Liters Filled</label>
-            <input type="number" step="0.01" name="liters_filled" required>
+            <div class="form-group">
+                <label>Petrol Type</label>
+                <select name="petrol_type_id" id="petrol_type_select" onchange="fillPrice(this)" required>
+                    <option value="">-- Select Location First --</option>
+                </select>
+            </div>
 
-            <label>KM Start</label>
-            <input type="number" name="km_start" required>
+            <div class="form-group">
+                <label>Price per Liter</label>
+                <input type="number" step="0.01" name="price_per_liter" id="price_input" required disabled>
+            </div>
 
-            <label>KM End</label>
-            <input type="number" name="km_end" required>
+            <div class="form-group">
+                <label>Total Paid</label>
+                <input type="number" step="0.01" name="total_paid" required>
+            </div>
 
-            <label>Location</label>
-            <input type="text" name="location">
+            <div class="form-group">
+                <label>Liters Filled</label>
+                <input type="number" step="0.01" name="liters_filled" required>
+            </div>
 
-            <label>Notes</label>
-            <input type="text" name="notes">
+            <div class="form-group">
+                <label>KM Start</label>
+                <input type="number" name="km_start" required>
+            </div>
+
+            <div class="form-group">
+                <label>KM End</label>
+                <input type="number" name="km_end" required>
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <input type="text" name="notes">
+            </div>
 
             <div class="modal-actions">
                 <button type="submit">Save</button>
@@ -34,4 +63,18 @@
         </form>
     </div>
 </div>
+
+<script>
+function loadPetrolTypes(locationId) {
+    if (!locationId) return;
+    htmx.ajax('GET', '/web/locations/' + locationId + '/petrol-types', '#petrol_type_select');
+}
+function fillPrice(select) {
+    const opt = select.options[select.selectedIndex];
+    const price = opt.getAttribute('data-price');
+    if (price) {
+        document.getElementById('price_input').value = price;
+    }
+}
+</script>
 {{ end }}

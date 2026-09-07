@@ -15,7 +15,10 @@ type FuelLog struct {
 	LitersFilled  decimal.Decimal `gorm:"type:decimal(10,2)" json:"liters_filled"`
 	KmStart       int             `json:"km_start"`
 	KmEnd         int             `json:"km_end"`
-	Location      string          `gorm:"type:varchar(255)" json:"location"`
+	LocationID    uint            `json:"location_id"`
+	Location      Location        `gorm:"foreignKey:LocationID" json:"location,omitempty"`
+	PetrolTypeID  uint            `json:"petrol_type_id"`
+	PetrolType    PetrolType      `gorm:"foreignKey:PetrolTypeID" json:"petrol_type,omitempty"`
 	Notes         string          `gorm:"type:text" json:"notes"`
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`

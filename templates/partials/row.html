@@ -1,16 +1,16 @@
 {{ define "row" }}
 <tr id="row-{{ .ID }}">
-    <td>{{ .Month }}</td>
     <td>{{ .Date.Format "2006-01-02" }}</td>
+    <td>{{ .LocationName }}</td>
+    <td>{{ .PetrolTypeName }}</td>
     <td>{{ .PricePerLiter }}</td>
     <td>{{ .TotalPaid }}</td>
     <td>{{ .LitersFilled }}</td>
     <td>{{ .KmStart }}</td>
     <td>{{ .KmEnd }}</td>
     <td>{{ .Distance }}</td>
-    <td>{{ .PaidPerKm }}</td>
-    <td>{{ .UsageKmL }}</td>
-    <td>{{ .Location }}</td>
+    <td>{{ .PaidPerKm.StringFixed 2 }}</td>
+    <td>{{ .UsageKmL.StringFixed 2 }}</td>
     <td>{{ .Notes }}</td>
     <td>
         <button hx-get="/web/fuel-logs/{{ .ID }}/edit" hx-target="#row-{{ .ID }}" hx-swap="outerHTML">Edit</button>

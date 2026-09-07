@@ -13,11 +13,16 @@ import (
 )
 
 type FuelLogWebHandler struct {
-	usecase usecase.FuelLogUsecase
+	usecase         usecase.FuelLogUsecase
+	locationUsecase usecase.LocationUsecase
 }
 
-func NewFuelLogWebHandler(u usecase.FuelLogUsecase) *FuelLogWebHandler {
-	return &FuelLogWebHandler{usecase: u}
+func NewFuelLogWebHandler(u usecase.FuelLogUsecase, lu usecase.LocationUsecase) *FuelLogWebHandler {
+	return &FuelLogWebHandler{
+		usecase:         u,
+		locationUsecase: lu,
+	}
+
 }
 
 func (h *FuelLogWebHandler) Index(c *gin.Context) {
@@ -32,21 +37,25 @@ func (h *FuelLogWebHandler) parseForm(c *gin.Context) dto.CreateFuelLogRequest {
 	liters, _ := decimal.NewFromString(c.PostForm("liters_filled"))
 	kmStart, _ := strconv.Atoi(c.PostForm("km_start"))
 	kmEnd, _ := strconv.Atoi(c.PostForm("km_end"))
+	locationID, _ := strconv.Atoi(c.PostForm("location_id"))
+	petrolTypeID, _ := strconv.Atoi(c.PostForm("petrol_type_id"))
 
 	return dto.CreateFuelLogRequest{
 		Date: date, PricePerLiter: price, TotalPaid: paid, LitersFilled: liters,
 		KmStart: kmStart, KmEnd: kmEnd,
-		Location: c.PostForm("location"), Notes: c.PostForm("notes"),
+		LocationID: uint(locationID), PetrolTypeID: uint(petrolTypeID),
+		Notes: c.PostForm("notes"),
 	}
 }
 
 func (h *FuelLogWebHandler) Create(c *gin.Context) {
 	req := h.parseForm(c)
-	h.usecase.Create(req)
+	if _, err := h.usecase.Create(req); err != nil {
+		c.String(http.StatusBadRequest, "Create failed: "+err.Error())
+		return
+	}
 
 	logs, _ := h.usecase.GetAll()
-
-	// render table, then append an out-of-band swap to clear the modal
 	c.Writer.WriteHeader(http.StatusOK)
 	c.HTML(http.StatusOK, "table", logs)
 	c.Writer.Write([]byte(`<div id="modal-container" hx-swap-oob="true"></div>`))
@@ -75,10 +84,14 @@ func (h *FuelLogWebHandler) Update(c *gin.Context) {
 	updateReq := dto.UpdateFuelLogRequest{
 		Date: req.Date, PricePerLiter: req.PricePerLiter, TotalPaid: req.TotalPaid,
 		LitersFilled: req.LitersFilled, KmStart: req.KmStart, KmEnd: req.KmEnd,
-		Location: req.Location, Notes: req.Notes,
+		LocationID: req.LocationID, PetrolTypeID: req.PetrolTypeID, Notes: req.Notes,
 	}
 
-	log, _ := h.usecase.Update(uint(id), updateReq)
+	log, err := h.usecase.Update(uint(id), updateReq)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Update failed: "+err.Error())
+		return
+	}
 	c.HTML(http.StatusOK, "row", log)
 }
 
@@ -89,7 +102,11 @@ func (h *FuelLogWebHandler) Delete(c *gin.Context) {
 }
 
 func (h *FuelLogWebHandler) NewForm(c *gin.Context) {
-	c.HTML(http.StatusOK, "create_form", nil)
+	locations, _ := h.locationUsecase.GetAll()
+	c.HTML(http.StatusOK, "create_form", gin.H{
+		"Locations": locations,
+		"Today":     time.Now().Format("2006-01-02"),
+	})
 }
 
 func (h *FuelLogWebHandler) CloseModal(c *gin.Context) {

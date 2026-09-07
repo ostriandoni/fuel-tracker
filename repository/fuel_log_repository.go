@@ -31,13 +31,13 @@ func (r *fuelLogRepository) Create(log *model.FuelLog) error {
 
 func (r *fuelLogRepository) FindAll() ([]model.FuelLog, error) {
 	var logs []model.FuelLog
-	err := r.db.Order("date asc").Find(&logs).Error
+	err := r.db.Preload("Location").Preload("PetrolType").Order("date asc").Find(&logs).Error
 	return logs, err
 }
 
 func (r *fuelLogRepository) FindByID(id uint) (*model.FuelLog, error) {
 	var log model.FuelLog
-	err := r.db.First(&log, id).Error
+	err := r.db.Preload("Location").Preload("PetrolType").First(&log, id).Error
 	if err != nil {
 		return nil, err
 	}
