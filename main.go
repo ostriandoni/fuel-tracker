@@ -36,7 +36,7 @@ func main() {
 	petrolTypeUsecase := usecase.NewPetrolTypeUsecase(petrolTypeRepo)
 	petrolTypeHandler := handler.NewPetrolTypeHandler(petrolTypeUsecase)
 
-	fuelLogWebHandler := handler.NewFuelLogWebHandler(fuelLogUsecase, locationUsecase)
+	fuelLogWebHandler := handler.NewFuelLogWebHandler(fuelLogUsecase, locationUsecase, petrolTypeUsecase)
 	locationWebHandler := handler.NewLocationWebHandler(petrolTypeUsecase)
 
 	r := router.SetupRouter(fuelLogHandler, fuelLogWebHandler, locationWebHandler, locationHandler, petrolTypeHandler)

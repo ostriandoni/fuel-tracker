@@ -13,16 +13,13 @@ import (
 )
 
 type FuelLogWebHandler struct {
-	usecase         usecase.FuelLogUsecase
-	locationUsecase usecase.LocationUsecase
+	usecase           usecase.FuelLogUsecase
+	locationUsecase   usecase.LocationUsecase
+	petrolTypeUsecase usecase.PetrolTypeUsecase
 }
 
-func NewFuelLogWebHandler(u usecase.FuelLogUsecase, lu usecase.LocationUsecase) *FuelLogWebHandler {
-	return &FuelLogWebHandler{
-		usecase:         u,
-		locationUsecase: lu,
-	}
-
+func NewFuelLogWebHandler(u usecase.FuelLogUsecase, lu usecase.LocationUsecase, ptu usecase.PetrolTypeUsecase) *FuelLogWebHandler {
+	return &FuelLogWebHandler{usecase: u, locationUsecase: lu, petrolTypeUsecase: ptu}
 }
 
 func (h *FuelLogWebHandler) Index(c *gin.Context) {
@@ -32,13 +29,18 @@ func (h *FuelLogWebHandler) Index(c *gin.Context) {
 
 func (h *FuelLogWebHandler) parseForm(c *gin.Context) dto.CreateFuelLogRequest {
 	date, _ := time.Parse("2006-01-02", c.PostForm("date"))
-	price, _ := decimal.NewFromString(c.PostForm("price_per_liter"))
 	paid, _ := decimal.NewFromString(c.PostForm("total_paid"))
 	liters, _ := decimal.NewFromString(c.PostForm("liters_filled"))
 	kmStart, _ := strconv.Atoi(c.PostForm("km_start"))
 	kmEnd, _ := strconv.Atoi(c.PostForm("km_end"))
 	locationID, _ := strconv.Atoi(c.PostForm("location_id"))
 	petrolTypeID, _ := strconv.Atoi(c.PostForm("petrol_type_id"))
+
+	// derive price_per_liter from the actual petrol type record, not client input
+	price := decimal.Zero
+	if pt, err := h.petrolTypeUsecase.GetByID(uint(petrolTypeID)); err == nil {
+		price = pt.Price
+	}
 
 	return dto.CreateFuelLogRequest{
 		Date: date, PricePerLiter: price, TotalPaid: paid, LitersFilled: liters,
