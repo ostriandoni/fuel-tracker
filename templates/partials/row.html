@@ -7,10 +7,10 @@
     <td>{{ .TotalPaid }}</td>
     <td>{{ .LitersFilled }}</td>
     <td>{{ .KmStart }}</td>
-    <td>{{ .KmEnd }}</td>
-    <td>{{ .Distance }}</td>
-    <td>{{ .PaidPerKm.StringFixed 2 }}</td>
-    <td>{{ .UsageKmL.StringFixed 2 }}</td>
+    <td>{{ .KmEndDisplay }}</td>
+    <td>{{ .DistanceDisplay }}</td>
+    <td>{{ .PaidPerKmDisplay }}</td>
+    <td>{{ .UsageKmLDisplay }}</td>
     <td>{{ .Notes }}</td>
     <td>
         <button hx-get="/web/fuel-logs/{{ .ID }}/edit" hx-target="#row-{{ .ID }}" hx-swap="outerHTML">Edit</button>

@@ -47,11 +47,6 @@
             </div>
 
             <div class="form-group">
-                <label>KM End</label>
-                <input type="number" name="km_end" required>
-            </div>
-
-            <div class="form-group">
                 <label>Notes</label>
                 <input type="text" name="notes">
             </div>
@@ -67,14 +62,43 @@
 <script>
 function loadPetrolTypes(locationId) {
     if (!locationId) return;
+
     htmx.ajax('GET', '/web/locations/' + locationId + '/petrol-types', '#petrol_type_select');
 }
+
 function fillPrice(select) {
     const opt = select.options[select.selectedIndex];
     const price = opt.getAttribute('data-price');
+
     if (price) {
         document.getElementById('price_input').value = price;
     }
+
+    recalculate();
+}
+
+function recalculate() {
+    const price = parseFloat(document.getElementById('price_input').value);
+    const paidInput = document.querySelector('[name="total_paid"]');
+    const litersInput = document.querySelector('[name="liters_filled"]');
+
+    if (!price) return;
+
+    paidInput.oninput = function() {
+        const paid = parseFloat(this.value);
+
+        if (!isNaN(paid)) {
+            litersInput.value = (paid / price).toFixed(2);
+        }
+    };
+
+    litersInput.oninput = function() {
+        const liters = parseFloat(this.value);
+
+        if (!isNaN(liters)) {
+            paidInput.value = (liters * price).toFixed(2);
+        }
+    };
 }
 </script>
 {{ end }}

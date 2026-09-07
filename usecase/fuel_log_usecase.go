@@ -29,33 +29,29 @@ func (u *fuelLogUsecase) toResponse(m *model.FuelLog) *dto.FuelLogResponse {
 	usageKmL := helper.CalculateUsageKmL(distance, m.LitersFilled)
 
 	return &dto.FuelLogResponse{
-		ID:             m.ID,
-		Month:          int(m.Date.Month()),
-		Date:           m.Date,
-		PricePerLiter:  m.PricePerLiter,
-		TotalPaid:      m.TotalPaid,
-		LitersFilled:   m.LitersFilled,
-		KmStart:        m.KmStart,
-		KmEnd:          m.KmEnd,
-		Distance:       distance,
-		PaidPerKm:      paidPerKm,
-		UsageKmL:       usageKmL,
-		LocationID:     m.LocationID,
-		LocationName:   m.Location.Name, // struct field, not the struct itself
-		PetrolTypeID:   m.PetrolTypeID,
-		PetrolTypeName: m.PetrolType.Name, // struct field
-		Notes:          m.Notes,
+		ID: m.ID, Month: int(m.Date.Month()), Date: m.Date,
+		PricePerLiter: m.PricePerLiter, TotalPaid: m.TotalPaid, LitersFilled: m.LitersFilled,
+		KmStart: m.KmStart, KmEnd: m.KmEnd, Distance: distance,
+		PaidPerKm: paidPerKm, UsageKmL: usageKmL,
+		LocationID: m.LocationID, LocationName: m.Location.Name,
+		PetrolTypeID: m.PetrolTypeID, PetrolTypeName: m.PetrolType.Name,
+		Notes: m.Notes,
 	}
 }
 
 func (u *fuelLogUsecase) Create(req dto.CreateFuelLogRequest) (*dto.FuelLogResponse, error) {
+	prev, err := u.repo.FindLatest()
+	if err != nil {
+		return nil, err
+	}
+
 	log := &model.FuelLog{
 		Date:          req.Date,
 		PricePerLiter: req.PricePerLiter,
 		TotalPaid:     req.TotalPaid,
 		LitersFilled:  req.LitersFilled,
 		KmStart:       req.KmStart,
-		KmEnd:         req.KmEnd,
+		KmEnd:         nil,
 		LocationID:    req.LocationID,
 		PetrolTypeID:  req.PetrolTypeID,
 		Notes:         req.Notes,
@@ -63,6 +59,14 @@ func (u *fuelLogUsecase) Create(req dto.CreateFuelLogRequest) (*dto.FuelLogRespo
 
 	if err := u.repo.Create(log); err != nil {
 		return nil, err
+	}
+
+	if prev != nil {
+		kmStart := req.KmStart
+		prev.KmEnd = &kmStart
+		if err := u.repo.Update(prev); err != nil {
+			return nil, err
+		}
 	}
 
 	return u.toResponse(log), nil
@@ -100,7 +104,6 @@ func (u *fuelLogUsecase) Update(id uint, req dto.UpdateFuelLogRequest) (*dto.Fue
 	log.TotalPaid = req.TotalPaid
 	log.LitersFilled = req.LitersFilled
 	log.KmStart = req.KmStart
-	log.KmEnd = req.KmEnd
 	log.LocationID = req.LocationID
 	log.PetrolTypeID = req.PetrolTypeID
 	log.Notes = req.Notes

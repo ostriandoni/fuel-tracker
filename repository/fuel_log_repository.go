@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fuel-tracker/model"
 
 	"gorm.io/gorm"
@@ -12,9 +13,10 @@ type FuelLogRepository interface {
 	FindByID(id uint) (*model.FuelLog, error)
 	Update(log *model.FuelLog) error
 	Delete(id uint) error
-	Restore(id uint) error                        // new
-	FindAllWithTrashed() ([]model.FuelLog, error) // new
-	PermanentDelete(id uint) error                // new
+	Restore(id uint) error
+	FindAllWithTrashed() ([]model.FuelLog, error)
+	PermanentDelete(id uint) error
+	FindLatest() (*model.FuelLog, error)
 }
 
 type fuelLogRepository struct {
@@ -64,4 +66,16 @@ func (r *fuelLogRepository) FindAllWithTrashed() ([]model.FuelLog, error) {
 
 func (r *fuelLogRepository) PermanentDelete(id uint) error {
 	return r.db.Unscoped().Delete(&model.FuelLog{}, id).Error
+}
+
+func (r *fuelLogRepository) FindLatest() (*model.FuelLog, error) {
+	var log model.FuelLog
+	err := r.db.Order("date desc, id desc").First(&log).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &log, nil
 }

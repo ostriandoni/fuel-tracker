@@ -32,11 +32,9 @@ func (h *FuelLogWebHandler) parseForm(c *gin.Context) dto.CreateFuelLogRequest {
 	paid, _ := decimal.NewFromString(c.PostForm("total_paid"))
 	liters, _ := decimal.NewFromString(c.PostForm("liters_filled"))
 	kmStart, _ := strconv.Atoi(c.PostForm("km_start"))
-	kmEnd, _ := strconv.Atoi(c.PostForm("km_end"))
 	locationID, _ := strconv.Atoi(c.PostForm("location_id"))
 	petrolTypeID, _ := strconv.Atoi(c.PostForm("petrol_type_id"))
 
-	// derive price_per_liter from the actual petrol type record, not client input
 	price := decimal.Zero
 	if pt, err := h.petrolTypeUsecase.GetByID(uint(petrolTypeID)); err == nil {
 		price = pt.Price
@@ -44,8 +42,7 @@ func (h *FuelLogWebHandler) parseForm(c *gin.Context) dto.CreateFuelLogRequest {
 
 	return dto.CreateFuelLogRequest{
 		Date: date, PricePerLiter: price, TotalPaid: paid, LitersFilled: liters,
-		KmStart: kmStart, KmEnd: kmEnd,
-		LocationID: uint(locationID), PetrolTypeID: uint(petrolTypeID),
+		KmStart: kmStart, LocationID: uint(locationID), PetrolTypeID: uint(petrolTypeID),
 		Notes: c.PostForm("notes"),
 	}
 }

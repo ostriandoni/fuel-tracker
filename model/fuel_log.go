@@ -14,7 +14,7 @@ type FuelLog struct {
 	TotalPaid     decimal.Decimal `gorm:"type:decimal(12,2)" json:"total_paid"`
 	LitersFilled  decimal.Decimal `gorm:"type:decimal(10,2)" json:"liters_filled"`
 	KmStart       int             `json:"km_start"`
-	KmEnd         int             `json:"km_end"`
+	KmEnd         *int            `json:"km_end"`
 	LocationID    uint            `json:"location_id"`
 	Location      Location        `gorm:"foreignKey:LocationID" json:"location,omitempty"`
 	PetrolTypeID  uint            `json:"petrol_type_id"`
